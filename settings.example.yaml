@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=settings.schema.yaml
+$schema: "./settings.schema.yaml"
+environment: development
+database_uri: mongodb://mongoadmin:secret@127.0.0.1:27017/db?authSource=admin # replace 127.0.0.1 with db in Docker
+accounts:
+  # get from https://api.innohassle.ru/accounts/v0/tokens/generate-service-token?sub=clubs-local-dev&scopes=users&only_for_me=true
+  api_jwt_token: null
+superadmin_emails: []
