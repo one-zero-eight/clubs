@@ -19,6 +19,10 @@ async def read(id: PydanticObjectId) -> Club | None:
     return await Club.get(id)
 
 
+async def read_by_slug(slug: str) -> Club | None:
+    return await Club.find_one(Club.slug == slug)
+
+
 async def read_by_leader_innohassle_id(leader_innohassle_id: str) -> list[Club] | None:
     return await Club.find(Club.leader_innohassle_id == leader_innohassle_id).to_list()
 

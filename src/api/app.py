@@ -77,8 +77,10 @@ app.add_middleware(
 
 from src.modules.clubs.routes import router as router_clubs  # noqa: E402, I001
 from src.modules.users.routes import router as router_users  # noqa: E402, I001
+from src.modules.leaders.routes import router as router_leaders  # noqa: E402
 
 # Import routers above and include them below [do not edit this comment]
 app.include_router(router_clubs)
 app.include_router(router_users)
+app.include_router(router_leaders)
 # ^
