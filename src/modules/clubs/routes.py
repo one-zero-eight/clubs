@@ -12,6 +12,7 @@ import src.modules.clubs.crud as c
 from src.api import docs
 from src.api.dependencies import REQUIRE_ADMIN
 from src.config import settings
+from src.modules.inh_accounts_sdk import inh_accounts
 from src.storages.mongo import Club
 
 router = APIRouter(
@@ -89,6 +90,13 @@ async def get_club_info_by_slug(slug: str) -> Club:
 async def edit_club_info(id: PydanticObjectId, club_info: c.UpdateClub, _: REQUIRE_ADMIN) -> Club:
     """Edit a club info."""
     # TODO: Allow club leaders to edit some info
+    if club_info.new_leader_email:
+        new_leader_data = await inh_accounts.get_user(email=club_info.new_leader_email)
+        if not new_leader_data:
+            raise HTTPException(status_code=404, detail="New leader email not found")
+        club_info.leader_innohassle_id = new_leader_data.id
+        club_info.new_leader_email = None
+
     club = await c.update(id, club_info)
     if club is None:
         raise HTTPException(status_code=404, detail="Club not found")
@@ -107,6 +115,13 @@ async def edit_club_info(id: PydanticObjectId, club_info: c.UpdateClub, _: REQUI
 async def edit_club_info_by_slug(slug: str, club_info: c.UpdateClub, _: REQUIRE_ADMIN) -> Club:
     """Edit a club info."""
     # TODO: Allow club leaders to edit some info
+    if club_info.new_leader_email:
+        new_leader_data = await inh_accounts.get_user(email=club_info.new_leader_email)
+        if not new_leader_data:
+            raise HTTPException(status_code=404, detail="New leader email not found")
+        club_info.leader_innohassle_id = new_leader_data.id
+        club_info.new_leader_email = None
+
     club = await c.read_by_slug(slug)
     if not club:
         raise HTTPException(status_code=404, detail="Club not found")

@@ -8,7 +8,7 @@ class CreateClub(ClubSchema):
 
 
 class UpdateClub(ClubSchema):
-    pass
+    new_leader_email: str | None = None
 
 
 async def create(data: CreateClub) -> Club:
@@ -31,7 +31,7 @@ async def read_all() -> list[Club]:
     return await Club.all().to_list()
 
 
-async def update(id: PydanticObjectId, data: UpdateClub) -> Club | None:
+async def update(id: PydanticObjectId, data: ClubSchema) -> Club | None:
     obj = await Club.get(id)
     if obj:
         await obj.set(data.model_dump())
