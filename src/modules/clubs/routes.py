@@ -1,3 +1,4 @@
+import beanie.exceptions
 import magic
 import pyvips
 from anyio import open_file
@@ -98,6 +99,7 @@ async def edit_club_info(id: PydanticObjectId, club_info: c.UpdateClub, _: REQUI
     "/by-slug/{slug}",
     responses={
         status.HTTP_200_OK: {"description": "Changed club info successfully"},
+        status.HTTP_400_BAD_REQUEST: {"description": "Slug already exists"},
         status.HTTP_403_FORBIDDEN: {"description": "Only admin can change club info"},
         status.HTTP_404_NOT_FOUND: {"description": "Club not found"},
     },
@@ -108,7 +110,10 @@ async def edit_club_info_by_slug(slug: str, club_info: c.UpdateClub, _: REQUIRE_
     club = await c.read_by_slug(slug)
     if not club:
         raise HTTPException(status_code=404, detail="Club not found")
-    return await c.update(club.id, club_info)
+    try:
+        return await c.update(club.id, club_info)
+    except beanie.exceptions.RevisionIdWasChanged:
+        raise HTTPException(status_code=400, detail="Slug already exists")
 
 
 @router.delete(
