@@ -44,7 +44,7 @@ async def read_many_by_innohassle_ids(innohassle_ids: list[str]) -> list[Leader 
             continue
         leaders.append(
             Leader(
-                innohassle_id=user_info.innopolis_sso.id,
+                innohassle_id=user_info.id,
                 name=user_info.innopolis_sso.name,
                 email=user_info.innopolis_sso.email,
                 telegram_alias=user_info.telegram.username if user_info.telegram else None,

@@ -24,11 +24,12 @@ docs.TAGS_INFO.append({"description": _description, "name": str(router.tags[0])}
         status.HTTP_200_OK: {"description": "Info about all club leaders"},
     },
 )
-async def get_all_leaders() -> list[c.Leader]:
+async def get_all_leaders() -> dict[str, c.Leader]:
     """Get all club leaders."""
     clubs = await clubs_crud.read_all()
     leaders = await c.read_many_by_innohassle_ids([club.leader_innohassle_id for club in clubs])
-    return list(filter(lambda v: v is not None, leaders))
+    leaders = list(filter(lambda v: v is not None, leaders))
+    return {leader.innohassle_id: leader for leader in leaders}
 
 
 @router.get(
