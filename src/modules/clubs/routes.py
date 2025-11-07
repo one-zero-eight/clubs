@@ -1,17 +1,16 @@
 import beanie.exceptions
 import magic
 import pyvips
-from anyio import open_file
 from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi_derive_responses import AutoDeriveResponsesAPIRoute
 from starlette import status
-from starlette.responses import StreamingResponse
+from starlette.responses import RedirectResponse
 
 import src.modules.clubs.crud as c
+import src.modules.clubs.minio as clubs_minio
 from src.api import docs
 from src.api.dependencies import REQUIRE_ADMIN
-from src.config import settings
 from src.modules.inh_accounts_sdk import inh_accounts
 from src.storages.mongo import Club
 
@@ -149,12 +148,12 @@ async def delete_club(id: PydanticObjectId, _: REQUIRE_ADMIN) -> None:
 @router.get(
     "/by-id/{id}/logo",
     responses={
-        status.HTTP_200_OK: {"description": "Club info"},
+        status.HTTP_307_TEMPORARY_REDIRECT: {"description": "Redirect to the club logo"},
         status.HTTP_404_NOT_FOUND: {"description": "Club not found or no logo available"},
     },
     response_model=None,
 )
-async def get_club_logo(id: str) -> StreamingResponse | None:
+async def get_club_logo(id: str):
     """Get club info."""
     club = await c.read(id)
     if not club:
@@ -163,13 +162,7 @@ async def get_club_logo(id: str) -> StreamingResponse | None:
     if not club.logo_file_id:
         raise HTTPException(status_code=404, detail="No logo available")
 
-    file_path = settings.storage_path / club.logo_file_id
-    async with await open_file(file_path, "rb") as f:
-        return StreamingResponse(
-            [await f.read()],
-            media_type="image/webp",
-            headers={"Content-Disposition": f"inline; filename={club.slug}.webp"},
-        )
+    return RedirectResponse(url=clubs_minio.get_club_logo_url(club.logo_file_id, 512))
 
 
 @router.post(
@@ -196,16 +189,16 @@ async def set_club_logo(id: PydanticObjectId, logo_file: UploadFile, _: REQUIRE_
     if content_type not in ("image/jpeg", "image/png", "image/webp"):
         raise HTTPException(status_code=400, detail=f"Invalid content type ({content_type})")
 
-    # Convert to webp
-    if content_type in ("image/jpeg", "image/png"):
-        image = pyvips.Image.new_from_buffer(bytes_, "")
-        bytes_ = image.write_to_buffer(".webp")
+    # Convert to webp and resize to 512
+    image: pyvips.Image = pyvips.Image.new_from_buffer(bytes_, "")
+    image_bytes = image.write_to_buffer(".webp")
+    image_512: pyvips.Image = pyvips.Image.thumbnail_buffer(bytes_, 512, height=512)
+    image_512_bytes = image_512.write_to_buffer(".webp[Q=95,min-size]")
 
     # Save file
     logo_file_id = str(PydanticObjectId())
-    file_path = settings.storage_path / logo_file_id
-    async with await open_file(file_path, "wb") as buffer:
-        await buffer.write(bytes_)
+    clubs_minio.put_club_logo(logo_file_id, None, image_bytes, "image/webp")
+    clubs_minio.put_club_logo(logo_file_id, 512, image_512_bytes, "image/webp")
 
     club.logo_file_id = logo_file_id
     await club.save()

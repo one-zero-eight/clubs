@@ -25,6 +25,54 @@ $defs:
     - production
     title: Environment
     type: string
+  MinioSettings:
+    additionalProperties: false
+    properties:
+      endpoint:
+        default: 127.0.0.1:9000
+        description: URL of the target service.
+        title: Endpoint
+        type: string
+      secure:
+        default: false
+        description: Use https connection to the service.
+        title: Secure
+        type: boolean
+      region:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        description: Region of the service.
+        title: Region
+      bucket:
+        default: search
+        description: Name of the bucket in the service.
+        title: Bucket
+        type: string
+      access_key:
+        description: Access key (user ID) of a user account in the service.
+        examples:
+        - minioadmin
+        title: Access Key
+        type: string
+      secret_key:
+        description: Secret key (password) for the user account.
+        examples:
+        - password
+        format: password
+        title: Secret Key
+        type: string
+        writeOnly: true
+      club_logos_prefix:
+        default: logos/
+        title: Club Logos Prefix
+        type: string
+    required:
+    - access_key
+    - secret_key
+    title: MinioSettings
+    type: object
 additionalProperties: false
 description: Settings for the application.
 properties:
@@ -60,9 +108,13 @@ properties:
     type: string
   accounts:
     $ref: '#/$defs/Accounts'
+  minio:
+    $ref: '#/$defs/MinioSettings'
+    description: Configuration for S3 object storage
   storage_path:
-    default: ./storage
-    description: Path to files storage
+    default: storage
+    description: Path to the directory with files storage
+    format: path
     title: Storage Path
     type: string
   superadmin_emails:
@@ -74,6 +126,7 @@ properties:
 required:
 - database_uri
 - accounts
+- minio
 - superadmin_emails
 title: Settings
 type: object

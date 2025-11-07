@@ -23,6 +23,23 @@ class Accounts(SettingBaseModel):
     "JWT token for accessing the Accounts API as a service"
 
 
+class MinioSettings(SettingBaseModel):
+    endpoint: str = "127.0.0.1:9000"
+    "URL of the target service."
+    secure: bool = False
+    "Use https connection to the service."
+    region: str | None = None
+    "Region of the service."
+    bucket: str = "search"
+    "Name of the bucket in the service."
+    access_key: str = Field(..., examples=["minioadmin"])
+    "Access key (user ID) of a user account in the service."
+    secret_key: SecretStr = Field(..., examples=["password"])
+    "Secret key (password) for the user account."
+
+    club_logos_prefix: str = "logos/"
+
+
 class Settings(SettingBaseModel):
     """Settings for the application."""
 
@@ -42,6 +59,8 @@ class Settings(SettingBaseModel):
     "Allowed origins for CORS: from which domains requests to the API are allowed. Specify as a regex: `https://.*.innohassle.ru`"
     accounts: Accounts
     "InNoHassle Accounts integration settings"
+    minio: MinioSettings
+    "Configuration for S3 object storage"
     storage_path: Path = Path("./storage")
     "Path to the directory with files storage"
     superadmin_emails: list[str]

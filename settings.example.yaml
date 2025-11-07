@@ -6,3 +6,7 @@ accounts:
   # get from https://api.innohassle.ru/accounts/v0/tokens/generate-service-token?sub=clubs-local-dev&scopes=users&only_for_me=true
   api_jwt_token: null
 superadmin_emails: []
+minio:
+  endpoint: minio:9000
+  access_key: "minioadmin"
+  secret_key: "password"

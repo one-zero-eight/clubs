@@ -22,6 +22,7 @@ dependencies = [
     "beanie>=1.30.0,<2.0.0",
     "pyvips>=3.0.0",
     "python-magic>=0.4.27",
+    "minio>=7.2.18",
 ]
 
 [dependency-groups]
