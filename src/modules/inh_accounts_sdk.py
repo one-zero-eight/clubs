@@ -130,6 +130,18 @@ class InNoHassleAccounts:
                     raise e
             return None
 
+    async def get_users(self, innohassle_ids: list[str]) -> dict[str, UserSchema | None]:
+        """
+        Get multiple users by ids.
+        """
+        async with self.get_authorized_client() as client:
+            response = await client.post(
+                f"{self.api_url}/users/by-id/get-bulk",
+                json=innohassle_ids,
+            )
+            response.raise_for_status()
+            return {k: UserSchema.model_validate(v) if v else None for k, v in response.json().items()}
+
 
 inh_accounts: InNoHassleAccounts = InNoHassleAccounts(
     api_url=settings.accounts.api_url,
