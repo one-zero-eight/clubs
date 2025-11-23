@@ -13,7 +13,6 @@ services:
     ports:
       - "8014:8000"
     volumes:
-      - "./storage:/app/storage:rw" # Read-write files storage
       - "./settings.yaml:/app/settings.yaml:ro" # Read-only settings file
 
   db:

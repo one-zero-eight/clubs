@@ -61,8 +61,6 @@ class Settings(SettingBaseModel):
     "InNoHassle Accounts integration settings"
     minio: MinioSettings
     "Configuration for S3 object storage"
-    storage_path: Path = Path("./storage")
-    "Path to the directory with files storage"
     superadmin_emails: list[str]
     "Innomails of superadmins who can set admin roles"
 

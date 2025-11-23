@@ -111,12 +111,6 @@ properties:
   minio:
     $ref: '#/$defs/MinioSettings'
     description: Configuration for S3 object storage
-  storage_path:
-    default: storage
-    description: Path to the directory with files storage
-    format: path
-    title: Storage Path
-    type: string
   superadmin_emails:
     description: Innomails of superadmins who can set admin roles
     items:
