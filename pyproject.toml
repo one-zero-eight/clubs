@@ -23,11 +23,11 @@ dependencies = [
     "pyvips>=3.0.0",
     "python-magic>=0.4.27",
     "minio>=7.2.18",
+    "prek>=0.3.8",
 ]
 
 [dependency-groups]
 dev = [
-    "pre-commit>=4.0.1",
     "pytest>=8.4.0",
     "pytest-asyncio>=1.1.0",
     "pytest-cov>=6.2.1",
