@@ -18,9 +18,9 @@ class Leader(BaseSchema):
 def leader_from_user(user: UserSchema) -> Leader:
     return Leader(
         innohassle_id=user.id,
-        name=user.innopolis_sso.name if user.innopolis_sso else None,
-        email=user.innopolis_sso.email if user.innopolis_sso else None,
-        telegram_alias=user.telegram.username if user.telegram else None,
+        name=user.innopolis_info.name if user.innopolis_info else None,
+        email=user.innopolis_info.email if user.innopolis_info else None,
+        telegram_alias=user.telegram_info.username if user.telegram_info else None,
     )
 
 
