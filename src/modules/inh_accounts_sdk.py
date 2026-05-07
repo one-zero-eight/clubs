@@ -161,6 +161,7 @@ class InNoHassleAccounts:
             response.raise_for_status()
             return {k: UserSchema.model_validate(v) if v else None for k, v in response.json().items()}
 
+
 if settings.accounts:
     inh_accounts: InNoHassleAccounts = InNoHassleAccounts(
         api_url=settings.accounts.api_url,
