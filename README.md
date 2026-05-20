@@ -1,4 +1,7 @@
-# Clubs
+> [!WARNING]
+> Moved to https://github.com/one-zero-eight/monorepo
+
+# ~~Clubs~~
 
 ## Table of contents
 
